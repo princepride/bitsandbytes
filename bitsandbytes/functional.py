@@ -972,15 +972,17 @@ def quantize_4bit(
     if quant_type not in ['fp4', 'nf4']:
         raise NotImplementedError(f'4-bit quantization data type {quant_type} is not implemented.')
 
+    # 统计输入张量的元素数量，一个形状位（3，4，5）的张量，n为3*4*5 = 60
     n = A.numel()
     input_shape = A.shape
 
+    # 统计所需块的数量，用张量元素数除以块大小，向上取整
     if absmax is None:
         blocks = n // blocksize
         blocks += 1 if n % blocksize > 0 else 0
         absmax = torch.zeros((blocks,), device=A.device, dtype=torch.float32)
 
-
+    # 计算输出张量的元素数，如果是无符8位整型，那么原来的每两个元素存储在一个字节中，输出元素数减半
     if out is None:
         mod = dtype2bytes[quant_storage] * 2
         out = torch.zeros(((n+1)//mod, 1), dtype=quant_storage, device=A.device)
