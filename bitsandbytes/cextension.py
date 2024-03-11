@@ -5,6 +5,7 @@ import torch
 
 from bitsandbytes.cuda_setup.main import CUDASetup
 
+# CUDA初始化，如果可用
 setup = CUDASetup.get_instance()
 if setup.initialized != True:
     setup.run_cuda_setup()

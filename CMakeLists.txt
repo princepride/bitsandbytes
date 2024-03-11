@@ -16,6 +16,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(bitsandbytes LANGUAGES CXX)
 
 # Define included source files
+# CPP_FILES包含C++源文件，CUDA_FILES包含CUDA源文件，MPS_FILES和METAL_FILES则分别包含了针对Apple的Metal API的Objective-C++和Metal Shader源文件
 set(CPP_FILES csrc/common.cpp csrc/cpu_ops.cpp csrc/pythonInterface.cpp)
 set(CUDA_FILES csrc/ops.cu csrc/kernels.cu)
 set(MPS_FILES csrc/mps_ops.mm)
@@ -23,6 +24,7 @@ set(METAL_FILES csrc/mps_kernels.metal)
 # C++ sources are always included
 list(APPEND SRC_FILES ${CPP_FILES})
 
+# 这里定义了一个名为COMPUTE_BACKEND的缓存变量，用于控制项目编译时使用的计算后端（CPU、CUDA、MPS）。
 set(COMPUTE_BACKEND "cpu" CACHE STRING "The compute backend to use (cpu, cuda, mps)")
 set_property(CACHE COMPUTE_BACKEND PROPERTY STRINGS cpu cuda mps)
 option(PTXAS_VERBOSE "Pass through -v flag to PTX Assembler" OFF)
@@ -54,7 +56,7 @@ else()
     set(BUILD_MPS OFF)
 endif()
 
-
+# 根据COMPUTE_BACKEND的值，配置文件将决定是否包含CUDA或Metal的源文件，并设置相应的编译标志和依赖。
 if(BUILD_CUDA)
     enable_language(CUDA) # This will fail if CUDA is not found
     find_package(CUDAToolkit REQUIRED)
@@ -185,11 +187,12 @@ if(MSVC)
 endif()
 
 set_source_files_properties(${CPP_FILES} PROPERTIES LANGUAGE CXX)
+# 使用add_library命令根据SRC_FILES中定义的源文件列表创建一个名为bitsandbytes的共享库。这个命令将自动处理源文件的编译和库的链接。
 add_library(bitsandbytes SHARED ${SRC_FILES})
 target_compile_features(bitsandbytes PUBLIC cxx_std_14)
 target_include_directories(bitsandbytes PUBLIC csrc include)
 
-
+# 编译选项、包括的目录、链接的库等，会根据前面的条件配置适当设置。
 if(BUILD_CUDA)
     target_include_directories(bitsandbytes PUBLIC ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
     target_link_libraries(bitsandbytes PUBLIC CUDA::cudart CUDA::cublas CUDA::cusparse)
@@ -220,4 +223,5 @@ if(MSVC)
     set_target_properties(bitsandbytes PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/bitsandbytes")
 endif()
 
+# 输出目录和文件名配置
 set_target_properties(bitsandbytes PROPERTIES LIBRARY_OUTPUT_DIRECTORY bitsandbytes)
