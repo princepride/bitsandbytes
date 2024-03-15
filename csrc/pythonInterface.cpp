@@ -189,6 +189,13 @@ void spmm_coo_very_sparse_naive_int8(int *max_count, int *max_idx, int *offset_r
 { spmm_coo_very_sparse_naive<signed char, 8>(max_count, max_idx, offset_rowidx, rowidx, colidx, values, B, out, dequant_stats, nnz_rows, nnz, rowsA, rowsB, colsB); }
 #endif
 
+// extern "C"是C++中的一个指令，用于告诉C++编译器在编译时应以C语言的方式处理被extern "C"包围的代码。
+// 这通常用在包含或定义C语言函数的时候，以确保C++代码能够与C代码或库正确链接。
+
+// 当你在一个C++程序中调用C语言写的函数或库时，使用extern "C"是非常重要的，因为C++和C在函数名的处理
+//（也称为函数名修饰或名字粉碎）上有所不同。C++支持函数重载，因此编译器会修改（修饰）函数名，
+//以包含有关函数参数类型的信息。而C不支持函数重载，不会修改函数名。如果不使用extern "C"，
+//C++编译器会按照C++的规则修饰那些实际上以C的方式编译和链接的函数的名字，导致链接时找不到正确的函数名。
 extern "C"
 {
 #if BUILD_CUDA

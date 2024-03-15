@@ -3,5 +3,9 @@
     "ruff.lint.run": "onType",
     "editor.codeActionsOnSave": {
         "source.fixAll": "always"
+    },
+    "files.associations": {
+        "xiosbase": "cpp",
+        "xlocale": "cpp"
     }
 }

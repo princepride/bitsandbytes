@@ -52,6 +52,8 @@ void dequantize(float *code, unsigned char *A, float *out, int n)
   CUDA_CHECK_RETURN(cudaPeekAtLastError());
 }
 
+// 是的，这两个函数是互为反操作的。第一个函数quantizeBlockwise负责将浮点数数组A量化为更紧凑的格式（通常是较低位宽的整数），并存储在数组out中。
+// 第二个函数dequantizeBlockwise则执行相反的操作，它将out中的量化数据反量化回浮点数格式，并存储在数组out中。
 template <typename T, int STOCHASTIC, int DATA_TYPE> void quantizeBlockwise(float * code, T *A, float *absmax, unsigned char *out, float *rand, int rand_offset, int blocksize, const int n)
 {
   int num_blocks = n/blocksize;
